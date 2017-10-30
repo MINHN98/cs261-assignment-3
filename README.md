@@ -59,7 +59,7 @@ The assignment is worth 100 total points, broken down as follows:
 
 * 10 points: `bst_size()` works as described above
 * 15 points: `bst_height()` works as described above
-* 20 points: `bst_path_sum()` works as described above
-* 55 points: your BST iterator correctly implements an in-order iterator over a given BST
+* 25 points: `bst_path_sum()` works as described above
+* 50 points: your BST iterator correctly implements an in-order iterator over a given BST
 
 Importantly, your code MUST compile and run on one of the ENGR servers, e.g. `flip.engr.oregonstate.edu`.  If your code does not compile there, you will lose 25 points.  Also, you may not modify any of the existing starter code, and you may not re-define any of the existing structures.  You will lose points for doing this, as well.
