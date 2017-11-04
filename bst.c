@@ -32,6 +32,7 @@ struct bst {
   struct bst_node* root;
 };
 
+int bst_count(struct bst_node* root);
 
 struct bst* bst_create() {
   struct bst* bst = malloc(sizeof(struct bst));
@@ -315,6 +316,17 @@ int bst_contains(int val, struct bst* bst) {
 struct bst_iterator;
 
 
+int bst_count(struct bst_node* root){
+  int size = 1;
+  if(root->left != NULL){
+    size += bst_count(root->left);
+  }
+  if(root->right != NULL){
+    size += bst_count(root->right);
+  }
+  return size;
+}
+
 /*
  * This function should return the total number of elements stored in a given
  * BST.
@@ -326,8 +338,14 @@ struct bst_iterator;
  *   Should return the total number of elements stored in bst.
  */
 int bst_size(struct bst* bst) {
-  return 0;
+  int size = 0;
+  if(bst->root != NULL){
+    size = bst_count(bst->root);
+  }
+  return size;
 }
+
+
 
 
 /*

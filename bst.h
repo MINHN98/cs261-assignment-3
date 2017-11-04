@@ -10,6 +10,7 @@
  */
 struct bst;
 
+
 /*
  * Creates a new, empty binary search tree and returns a pointer to it.
  */
@@ -72,7 +73,10 @@ int bst_contains(int val, struct bst* bst);
 
 struct bst_iterator;
 
+//int bst_count(struct bst_node* root);
+
 int bst_size(struct bst* bst);
+
 
 int bst_height(struct bst* bst);
 
