@@ -33,6 +33,7 @@ struct bst {
 };
 
 int bst_count(struct bst_node* root);
+int bst_find_height(struct bst_node* root);
 
 struct bst* bst_create() {
   struct bst* bst = malloc(sizeof(struct bst));
@@ -316,6 +317,16 @@ int bst_contains(int val, struct bst* bst) {
 struct bst_iterator;
 
 
+/*
+ * This function is a helper function for the bst_size function. It should return
+ * the number of nodes below the root node
+ *
+ * Params:
+ *   root - the node that the function will start counting from
+ *
+ * Return:
+ *   Should return the number of nodes below the passed in root node.
+ */
 int bst_count(struct bst_node* root){
   int size = 1;
   if(root->left != NULL){
@@ -326,6 +337,7 @@ int bst_count(struct bst_node* root){
   }
   return size;
 }
+
 
 /*
  * This function should return the total number of elements stored in a given
@@ -346,6 +358,19 @@ int bst_size(struct bst* bst) {
 }
 
 
+int bst_find_height(struct bst_node* root){
+  if (root == NULL){
+    return -1;
+  }
+  int left = bst_find_height(root->left);
+  int right = bst_find_height(root->right);
+  
+  if (left > right){
+    return left + 1;
+  }else{
+    return right + 1;
+  }
+}
 
 
 /*
@@ -360,7 +385,7 @@ int bst_size(struct bst* bst) {
  *   Should return the height of bst.
  */
 int bst_height(struct bst* bst) {
-  return 0;
+  return bst_find_height(bst->root);
 }
 
 
