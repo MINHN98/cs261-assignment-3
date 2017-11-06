@@ -32,8 +32,12 @@ struct bst {
   struct bst_node* root;
 };
 
+
+//helper function declarations
 int bst_count(struct bst_node* root);
 int bst_find_height(struct bst_node* root);
+int bst_has_path_sum(int sum, struct bst_node* root);
+
 
 struct bst* bst_create() {
   struct bst* bst = malloc(sizeof(struct bst));
@@ -358,6 +362,15 @@ int bst_size(struct bst* bst) {
 }
 
 
+/*
+ * This function should return the height of a given node root.
+ *
+ * Params:
+ *   root - the node whose height is to be computed
+ *
+ * Return:
+ *   Should return the height of root.
+ */
 int bst_find_height(struct bst_node* root){
   if (root == NULL){
     return -1;
@@ -389,6 +402,29 @@ int bst_height(struct bst* bst) {
 }
 
 
+int bst_has_path_sum(int sum, struct bst_node* root) {
+  if (root == NULL){
+    return (sum == 0);
+  }else{
+    int boolean = 0;
+    int sub_sum = sum - root->val;
+
+    // if we are at a leaf of a tree
+    if (sub_sum == 0 && root->right == NULL && root->left == NULL){
+      return 1;
+    }
+    
+    if(root->left != NULL){
+      boolean = bst_has_path_sum(sub_sum, root->left);
+    }if(root->right != NULL){
+      boolean = boolean || bst_has_path_sum(sub_sum, root->right);
+    }
+    return boolean;
+       
+  }
+}
+
+
 /*
  * This function should determine whether a given BST contains a path from the
  * root to a leaf in which the node values sum to a specified value.
@@ -402,7 +438,7 @@ int bst_height(struct bst* bst) {
  *   the values of the nodes add up to sum.  Should return 0 otherwise.
  */
 int bst_path_sum(int sum, struct bst* bst) {
-  return 0;
+  return bst_has_path_sum(sum, bst->root);
 }
 
 
