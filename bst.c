@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "bst.h"
+#include "stack.h"
 
 /*
  * This structure represents a single node in a BST.
@@ -318,7 +319,9 @@ int bst_contains(int val, struct bst* bst) {
  * This is the structure you will use to create an in-order BST iterator.  It
  * is up to you how to define this structure.
  */
-struct bst_iterator;
+struct bst_iterator{
+  struct stack* s;
+};
 
 
 /*
@@ -333,12 +336,17 @@ struct bst_iterator;
  */
 int bst_count(struct bst_node* root){
   int size = 1;
+
+  //count nodes in left subtree of "root"
   if(root->left != NULL){
     size += bst_count(root->left);
   }
+
+  //count nodes in right subtree of "root" and add to "size"
   if(root->right != NULL){
     size += bst_count(root->right);
   }
+  
   return size;
 }
 
@@ -354,6 +362,7 @@ int bst_count(struct bst_node* root){
  *   Should return the total number of elements stored in bst.
  */
 int bst_size(struct bst* bst) {
+  assert(bst);
   int size = 0;
   if(bst->root != NULL){
     size = bst_count(bst->root);
@@ -372,12 +381,18 @@ int bst_size(struct bst* bst) {
  *   Should return the height of root.
  */
 int bst_find_height(struct bst_node* root){
+  // empty tree has height -1
   if (root == NULL){
     return -1;
   }
+
+  // recursively find height of left subtree
   int left = bst_find_height(root->left);
+
+  // recursively find height of right subtree
   int right = bst_find_height(root->right);
   
+  // return highest height in the tree below the "root" node
   if (left > right){
     return left + 1;
   }else{
@@ -398,27 +413,34 @@ int bst_find_height(struct bst_node* root){
  *   Should return the height of bst.
  */
 int bst_height(struct bst* bst) {
+  assert(bst);
   return bst_find_height(bst->root);
 }
 
 
 int bst_has_path_sum(int sum, struct bst_node* root) {
+  // case: when empty tree is passed in
   if (root == NULL){
     return (sum == 0);
   }else{
     int boolean = 0;
     int sub_sum = sum - root->val;
 
-    // if we are at a leaf of a tree
+    // if we are at a leaf of a tree, the path sum EXISTS
     if (sub_sum == 0 && root->right == NULL && root->left == NULL){
       return 1;
     }
     
+    /*
+    * recursive algorithm to determine if the right or left side of the current "root" node
+    * have sums equal to the current sub-sum
+    */
     if(root->left != NULL){
       boolean = bst_has_path_sum(sub_sum, root->left);
     }if(root->right != NULL){
       boolean = boolean || bst_has_path_sum(sub_sum, root->right);
     }
+
     return boolean;
        
   }
@@ -438,6 +460,7 @@ int bst_has_path_sum(int sum, struct bst_node* root) {
  *   the values of the nodes add up to sum.  Should return 0 otherwise.
  */
 int bst_path_sum(int sum, struct bst* bst) {
+  assert(bst);
   return bst_has_path_sum(sum, bst->root);
 }
 
@@ -455,7 +478,18 @@ int bst_path_sum(int sum, struct bst* bst) {
  *   value in bst (i.e. the leftmost value in the tree).
  */
 struct bst_iterator* bst_iterator_create(struct bst* bst) {
-  return NULL;
+  assert(bst);
+  struct bst_iterator* iter = malloc(sizeof(struct bst_iterator*));
+  iter->s = stack_create();
+  
+  //traverse to the far left side of the tree. This is where the iterator will start
+  struct bst_node* node = bst->root;
+  while(node != NULL){
+    stack_push(iter->s, node);
+    node = node->left;
+  }
+
+  return iter;
 }
 
 /*
@@ -465,7 +499,9 @@ struct bst_iterator* bst_iterator_create(struct bst* bst) {
  *   iter - the iterator whose memory is to be freed.  May not be NULL.
  */
 void bst_iterator_free(struct bst_iterator* iter) {
-
+  assert(iter);
+  stack_free(iter->s);
+  free(iter);
 }
 
 
@@ -478,7 +514,8 @@ void bst_iterator_free(struct bst_iterator* iter) {
  *   iter - the iterator to be checked for more values.  May not be NULL.
  */
 int bst_iterator_has_next(struct bst_iterator* iter) {
-  return 0;
+  assert(iter);
+  return (!stack_isempty(iter->s));
 }
 
 
@@ -491,5 +528,19 @@ int bst_iterator_has_next(struct bst_iterator* iter) {
  *     and must have at least one more value to be returned.
  */
 int bst_iterator_next(struct bst_iterator* iter) {
-  return 0;
+  assert(iter);
+
+  //pointer to current node 
+  struct bst_node* node = stack_pop(iter->s);
+  
+  // value of current node we will be returning
+  int val = node->val;
+ 
+  //traverse right side of current node and add the values to the stack
+  struct bst_node* child = node->right;
+  while(child != NULL){
+    stack_push(iter->s, child);
+    child = child->left;
+  }
+  return val;
 }
